@@ -5,7 +5,10 @@ module Cucumber
 
     class ProfileLoader
 
-      def initialize
+      def initialize(yml_directory)
+        if !yml_directory.nil?
+          Dir.chdir(yml_directory.first)
+        end
         @cucumber_yml = nil
       end
 

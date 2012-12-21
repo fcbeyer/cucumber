@@ -46,7 +46,8 @@ module Cucumber
       OPTIONS_WITH_ARGS = ['-r', '--require', '--i18n', '-f', '--format', '-o', '--out',
                                   '-t', '--tags', '-n', '--name', '-e', '--exclude',
                                   PROFILE_SHORT_FLAG, PROFILE_LONG_FLAG,
-                                  '-a', '--autoformat', '-l', '--lines', '--port']
+                                  '-a', '--autoformat', '-l', '--lines', '--port',
+                                  '--yml']
 
       def self.parse(args, out_stream, error_stream, options = {})
         new(out_stream, error_stream, options).parse!(args)
@@ -271,6 +272,11 @@ module Cucumber
           opts.on("--dotcucumber DIR", "Write metadata to DIR") do |dir|
             @options[:dotcucumber] = dir
           end
+          opts.on("--yml DIR",
+            "Look for the cucumber.yml file in a specific directory instead of the current directory.",
+            "This Option will also change the working directory to whatever is passed in.") do |yml_directory|
+            @options[:yml] = [yml_directory]
+          end
           opts.on_tail("--version", "Show version.") do
             @out_stream.puts Cucumber::VERSION
             Kernel.exit(0)
@@ -357,7 +363,7 @@ module Cucumber
       end
 
       def profile_loader
-        @profile_loader ||= ProfileLoader.new
+        @profile_loader ||= ProfileLoader.new(@options[:yml])
       end
 
       def reverse_merge(other_options)
